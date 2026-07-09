@@ -17,8 +17,9 @@ const Container = styled.div`
   display: flex;
   flex: 1;
   flex-flow: row nowrap;
+  gap: 20px;
   background: #222222;
-  padding: 40px 60px;
+  padding: 40px;
 `
 
 export default App

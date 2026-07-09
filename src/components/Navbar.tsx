@@ -16,6 +16,8 @@ const Navigation = styled.nav`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    background: var(--panel-bg);
+    padding: 20px;
 `
 const NavLinkStyled = styled(NavLink)`
     color: #ffffff;

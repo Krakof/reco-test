@@ -1,6 +1,7 @@
 import {createBrowserRouter} from "react-router";
 import App from "../App.tsx";
 import {PATHS} from "./paths.ts";
+import {Discovery} from "../pages/discovery/Discovery.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -9,7 +10,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                Component: () => <div>discovery</div>,
+                Component: Discovery,
             },
             {
                 path: PATHS.INVENTORY,
