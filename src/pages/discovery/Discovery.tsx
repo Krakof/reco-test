@@ -1,5 +1,8 @@
 import {type AppType, useGetAppsQuery} from "../../api/get-apps.ts";
 import styled from "styled-components";
+import {Pagination} from "./components/Pagination.tsx";
+import {useState} from "react";
+import {Filter} from "../../components/Filter.tsx";
 
 const columns = [
     {
@@ -20,7 +23,10 @@ const columns = [
 ];
 
 export const Discovery = () => {
-    const {data, error, isLoading} = useGetAppsQuery()
+    const [pageCount, setPageCount] = useState(25);
+    const [pageNumber, setPageNumber] = useState(0);
+    const [filterName, setFilterName] = useState('');
+    const {data, error, isLoading} = useGetAppsQuery({ pageSize: pageCount, pageNumber, appName: filterName})
     console.log(data)
 
     if (error || data?.error) {
@@ -31,8 +37,13 @@ export const Discovery = () => {
         return <span>Loading...</span>
     }
 
-    // return data ? <TableStyled dataSource={data.appRows} columns={columns} /> : <div>No data</div>
-    return data?.appRows ? <Table dataSource={data.appRows} /> : <div>No data</div>
+    return <div>
+        {data?.appRows ? <div>
+            <Table dataSource={data.appRows} />
+            <Pagination setPageCount={setPageCount} pageCount={pageCount} setPage={setPageNumber} totalPages={Math.ceil(data?.totalCount / pageCount)} />
+        </div> : <div>No data</div>}
+        <Filter appName={filterName} setName={setFilterName} />
+    </div>
 }
 
 const Table = ({ dataSource }: {dataSource: AppType[]}) => {

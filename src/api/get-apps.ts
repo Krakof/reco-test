@@ -49,8 +49,8 @@ const fake = {
     pageSize: 25
 }
 
-export const useGetAppsQuery = () =>
+export const useGetAppsQuery = ({ pageSize, pageNumber, appName }) =>
     useQuery({
-        queryKey: ['apps'],
-        queryFn: () => getApps(fake)
+        queryKey: ['apps', pageSize, pageNumber, appName],
+        queryFn: () => getApps({...fake, pageSize, pageNumber, appName}),
     })
