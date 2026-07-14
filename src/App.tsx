@@ -9,7 +9,6 @@ function App() {
       <Container>
         <Navbar />
         <Outlet />
-
       </Container>
   )
 }

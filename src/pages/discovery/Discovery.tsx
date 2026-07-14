@@ -1,35 +1,19 @@
-import {type AppType, useGetAppsQuery} from "../../api/get-apps.ts";
-import styled from "styled-components";
+import {useGetAppsQuery} from "../../api/get-apps.ts";
 import {Pagination} from "./components/Pagination.tsx";
 import {useState} from "react";
 import {Filter} from "../../components/Filter.tsx";
-
-const columns = [
-    {
-        title: 'Name',
-        dataIndex: 'appName',
-        key: 'name',
-    },
-    {
-        title: 'Category',
-        dataIndex: 'category',
-        key: 'category',
-    },
-    {
-        title: 'Connection',
-        dataIndex: 'appSources',
-        key: 'connection',
-    },
-];
+import {Table} from "./components/Table.tsx";
+import {DiscoveryProvider, FILTER_NAMES, useDiscoveryContext} from "./DiscoveryProvider.tsx";
+import styled from "styled-components";
 
 export const Discovery = () => {
     const [pageCount, setPageCount] = useState(25);
     const [pageNumber, setPageNumber] = useState(0);
-    const [filterName, setFilterName] = useState('');
-    const {data, error, isLoading} = useGetAppsQuery({ pageSize: pageCount, pageNumber, appName: filterName})
+    const { filters, handleUpdateFilter} = useDiscoveryContext()
+    const {data, error, isLoading, isError} = useGetAppsQuery({ pageSize: pageCount, pageNumber, appName: filters[FILTER_NAMES.APP_NAME], category: filters[FILTER_NAMES.APP_CATEGORY]})
     console.log(data)
 
-    if (error || data?.error) {
+    if (data?.error || error) {
         return <span>Something went wrong</span>
     }
 
@@ -37,46 +21,22 @@ export const Discovery = () => {
         return <span>Loading...</span>
     }
 
-    return <div>
+    return <DiscoveryLayout>
         {data?.appRows ? <div>
             <Table dataSource={data.appRows} />
             <Pagination setPageCount={setPageCount} pageCount={pageCount} setPage={setPageNumber} totalPages={Math.ceil(data?.totalCount / pageCount)} />
         </div> : <div>No data</div>}
-        <Filter appName={filterName} setName={setFilterName} />
-    </div>
+        <Filter filters={filters} onFiltersUpdate={handleUpdateFilter} />
+    </DiscoveryLayout>
 }
 
-const Table = ({ dataSource }: {dataSource: AppType[]}) => {
-    return (
-        <TableStyled>
-            <thead>
-            {columns.map(({ title, key }, i) =>
-                <>
-                    <HeadCellStyled key={key}>{title}</HeadCellStyled>
-                </>
-            )}
-            </thead>
-            <tbody>
-                {dataSource.map(({appId, appName, category, appSources}) => (
-                    <tr key={appId}>
-                        <CellStyled>{appName}</CellStyled>
-                        <CellStyled>{category}</CellStyled>
-                        <CellStyled>{appSources.join(',')}</CellStyled>
-                    </tr>
-                ))}
-            </tbody>
-        </TableStyled>
-    )}
+export const DiscoveryPage = () => {
+    return <DiscoveryProvider>
+        <Discovery />
+    </DiscoveryProvider>
+}
 
-const HeadCellStyled = styled.th`
-    font-size: 18px;
-`
-
-const TableStyled = styled.table`
-    width: 100%;
-    text-align: left;
-    color: #ffffff;
-`
-const CellStyled = styled.td`
-    font-size: 14px;
+const DiscoveryLayout = styled.div`
+    display: flex;
+    flex-flow: row nowrap;
 `

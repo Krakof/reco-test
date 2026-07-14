@@ -23,7 +23,7 @@ type Response = {
     error: string;
 }
 
-const getApps = async ({appName, category, pageNumber, pageSize}: Params): Promise<Response | void> => {
+const getApps = async ({appName, category, pageNumber, pageSize}: Params): Promise<Response> => {
     // try {
         const response = await fetch(`${URL}api/v1/app-service/get-apps`, {
             method: "PUT",
@@ -32,9 +32,9 @@ const getApps = async ({appName, category, pageNumber, pageSize}: Params): Promi
             },
             body: JSON.stringify({appName, category, pageNumber, pageSize}),
         });
-        // if (!response.ok) {
-        //     throw new Error(`Response status: ${response.status}`);
-        // }
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
 
         return response.json()
     // } catch (e) {
@@ -42,15 +42,8 @@ const getApps = async ({appName, category, pageNumber, pageSize}: Params): Promi
     // }
 }
 
-const fake = {
-    appName: '',
-    category: '',
-    pageNumber: 1,
-    pageSize: 25
-}
-
-export const useGetAppsQuery = ({ pageSize, pageNumber, appName }) =>
-    useQuery({
-        queryKey: ['apps', pageSize, pageNumber, appName],
-        queryFn: () => getApps({...fake, pageSize, pageNumber, appName}),
+export const useGetAppsQuery = ({ pageSize, pageNumber, appName, category }: Params) =>
+    useQuery<Response>({
+        queryKey: ['apps', pageSize, pageNumber, appName, category],
+        queryFn: () => getApps({pageSize, pageNumber, appName, category}),
     })
